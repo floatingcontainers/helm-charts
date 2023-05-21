@@ -1,0 +1,15 @@
+apiVersion: v1
+entries:
+  openstack-capi:
+  - apiVersion: v2
+    appVersion: main
+    created: "2023-05-21T18:18:26.168674917Z"
+    description: Helm chart for deploying a cluster on an OpenStack cloud using Cluster
+      API.
+    digest: 34a27ebd8d13aa5b608454c7c9ca209a94e999353693f73a66d2f7fc39ac285f
+    name: openstack-capi
+    type: application
+    urls:
+    - https://github.com/floatingcontainers/helm-charts/releases/download/openstack-capi-0.1.1/openstack-capi-0.1.1.tgz
+    version: 0.1.1
+generated: "2023-05-21T18:18:26.168679917Z"
