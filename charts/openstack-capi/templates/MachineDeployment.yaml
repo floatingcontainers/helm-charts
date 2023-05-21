@@ -1,0 +1,62 @@
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: MachineDeployment
+metadata:
+  name: {{ .Release.Name }}-md-0
+  {{- with (mergeOverwrite (deepCopy .Values.annotations) .Values.MachineDeployment.annotations) }}
+  annotations:
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
+spec:
+  clusterName: {{ .Release.Name }}
+  replicas: {{ .Values.nodeMachineReplicas }}
+  selector:
+    matchLabels: null
+  template:
+    spec:
+      bootstrap:
+        configRef:
+          apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+          kind: KubeadmConfigTemplate
+          name: {{ .Release.Name }}-md-0
+      clusterName: {{ .Release.Name }}
+      failureDomain: {{ .Release.failureDomain }}
+      infrastructureRef:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1alpha6
+        kind: OpenStackMachineTemplate
+        name: {{ .Release.Name }}-md-0
+      version: {{ .Values.kuberentesVersion }}
+
+{{- range $v := .Values.extraNodeGroups }}
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: MachineDeployment
+metadata:
+  name: "{{ $.Release.Name }}-md-{{ $v.name }}"
+  {{- with (mergeOverwrite (deepCopy $.Values.annotations) $v.MachineDeployment.annotations) }}
+  annotations:
+    {{- range $key, $value := . }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
+spec:
+  clusterName: {{ $.Release.Name }}
+  replicas: {{ $v.MachineDeployment.nodeMachineReplicas }}
+  selector:
+    matchLabels: null
+  template:
+    spec:
+      bootstrap:
+        configRef:
+          apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+          kind: KubeadmConfigTemplate
+          name: {{ $.Release.Name }}-md-0
+      clusterName: {{ $.Release.Name }}
+      failureDomain: {{ $.Release.failureDomain }}
+      infrastructureRef:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1alpha6
+        kind: OpenStackMachineTemplate
+        name: "{{ $.Release.Name }}-md-{{ $v.name }}"
+      version: {{ $.Values.kuberentesVersion }}
+{{- end }}
